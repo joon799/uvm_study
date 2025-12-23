@@ -12,6 +12,7 @@ class counter_test extends uvm_test;
 
     function void build_phase(uvm_phase phase);
         env = counter_env::type_id::create("env", this);
+      //  seq = counter_seq::type_id::create("seq");
     endfunction
 
     task run_phase(uvm_phase phase);

@@ -24,7 +24,7 @@ sudo apt install lib32gcc-s1 lib32stdc++6
 
 
 sudo snap install gitkraken --classic
-
+sd
 //in bashrc
 //
 
@@ -77,5 +77,3 @@ echo "=== Running Simulation ==="
 xsim sim --runall  || exit 1
 #--runall
 echo "=== Done ==="
-
-

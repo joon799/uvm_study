@@ -5,6 +5,7 @@ import uvm_pkg::*;
 `include "counter_trans.sv"
 `include "counter_sequencer.sv"
 `include "counter_seq.sv"
+`include "counter_scoreboard.sv"
 `include "counter_driver.sv"
 `include "counter_monitor.sv"
 `include "counter_agent.sv"
@@ -29,6 +30,14 @@ module top;
         cif.rst_n = 0;
         repeat(5) @(posedge clk);
         cif.rst_n = 1;
+    end
+    initial begin
+        uvm_config_db#(virtual counter_if)::set(
+            null,
+            "uvm_test_top.env.agent.*",
+            "vif",
+            cif
+        );
     end
   initial begin
     $dumpfile("wave.vcd");

@@ -3,6 +3,7 @@ import uvm_pkg::*;
 
 class counter_trans extends uvm_sequence_item;
     rand bit en;
+    int count;
 
     `uvm_object_utils(counter_trans)
 
