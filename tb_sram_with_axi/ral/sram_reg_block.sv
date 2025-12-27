@@ -1,0 +1,23 @@
+import uvm_pkg::*;
+`include "uvm_macros.svh"
+
+class sram_reg_block extends uvm_reg_block;
+  `uvm_object_utils(sram_reg_block)
+
+  sram_data_reg data;
+
+  function new(string name="sram_reg_block");
+    super.new(name, UVM_NO_COVERAGE);
+  endfunction
+
+  virtual function void build();
+    default_map = create_map("map", 0, 4, UVM_LITTLE_ENDIAN);
+
+    data = sram_data_reg::type_id::create("data");
+    data.configure(this);
+    data.build();
+
+    default_map.add_reg(data, 'h0, "RW");
+  endfunction
+endclass
+
