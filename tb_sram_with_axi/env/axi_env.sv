@@ -18,7 +18,12 @@ class axi_env extends uvm_env;
   // -------------------------
   sram_reg_block   ral_block;
   axi_ral_adapter  adapter;
-  uvm_reg_predictor #(axi_seq_item) predictor;
+  uvm_reg_predictor #(axi_trans) predictor;
+
+  // -------------------------
+  // ⭐ 추가: Scoreboard
+  // -------------------------
+  axi_scoreboard   scb;
 
   function new(string name = "axi_env", uvm_component parent = null);
     super.new(name, parent);
@@ -38,17 +43,31 @@ class axi_env extends uvm_env;
     ral_block.reset();
 
     adapter   = axi_ral_adapter::type_id::create("adapter", this);
-    predictor = uvm_reg_predictor#(axi_seq_item)::type_id::create("predictor", this);
+    predictor = uvm_reg_predictor#(axi_trans)::type_id::create("predictor", this);
+
+    // -------------------------
+    // ⭐ Scoreboard 생성
+    // -------------------------
+    scb = axi_scoreboard::type_id::create("scb", this);
   endfunction
 
   function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);
 
-    // predictor 연결
+    // -------------------------
+    // RAL predictor 연결
+    // -------------------------
     predictor.map     = ral_block.default_map;
     predictor.adapter = adapter;
 
     agent.mon.ap_port.connect(predictor.bus_in);
+    ral_block.default_map.set_sequencer(
+    agent.m_sequencer,
+    adapter
+    );    // -------------------------
+    // ⭐ monitor → scoreboard 연결
+    // -------------------------
+    agent.mon.ap_port.connect(scb.ap);
   endfunction
 
 endclass

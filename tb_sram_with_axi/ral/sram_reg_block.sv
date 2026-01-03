@@ -4,7 +4,7 @@ import uvm_pkg::*;
 class sram_reg_block extends uvm_reg_block;
   `uvm_object_utils(sram_reg_block)
 
-  sram_data_reg data;
+  sram_data_reg data_reg;
 
   function new(string name="sram_reg_block");
     super.new(name, UVM_NO_COVERAGE);
@@ -13,11 +13,11 @@ class sram_reg_block extends uvm_reg_block;
   virtual function void build();
     default_map = create_map("map", 0, 4, UVM_LITTLE_ENDIAN);
 
-    data = sram_data_reg::type_id::create("data");
-    data.configure(this);
-    data.build();
+    data_reg = sram_data_reg::type_id::create("data_reg");
+    data_reg.configure(this);
+    data_reg.build();
 
-    default_map.add_reg(data, 'h0, "RW");
+    default_map.add_reg(data_reg, 'h0, "RW");
   endfunction
 endclass
 

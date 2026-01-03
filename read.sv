@@ -33,7 +33,7 @@ source /home/joon/uvm_study/tools/2025.2/Vivado/.settings64-Vivado.sh
 source /home/joon/uvm_study/tools/2025.2/Model_Composer/.settings64-Model_Composer.sh
 source /home/joon/uvm_study/tools/2025.2/Vitis/.settings64-Vitis_for_HLS.sh
 
-export PATH=$PATH:/home/joon/uvm_study/tools/2025.2/bin/xvlog
+export PATH=$PATH:/home/joon/tools/Xilinx/Vivado/2024.1/bin/xvlog
 
 #!/bin/bash
 set -e
@@ -77,3 +77,21 @@ echo "=== Running Simulation ==="
 xsim sim --runall  || exit 1
 #--runall
 echo "=== Done ==="
+
+#####
+in paju 
+error is wrong source path
+echo $PATH | tr ':' '\n'
+
+LD_DEBUG=libs xsim sim --runall 2>&1 | head -40
+
+$ ldd $(which xsim) | grep -E "dpi|stdc|gcc"
+
+env -i \
+  HOME=$HOME \
+  PATH=/home/joon/tools/Xilinx/Vivado/2024.1/bin:/usr/bin:/bin \
+  bash --norc --noprofile
+
+
+todo : view waveform it's has wrong operate
+

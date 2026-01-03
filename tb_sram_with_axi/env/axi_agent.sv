@@ -8,23 +8,24 @@ class axi_agent extends uvm_agent;
 
   `uvm_component_utils(axi_agent)
 
-  // components
-  axi_sequencer seqr;
-  axi_driver    drv;
+  axi_sequencer m_sequencer;
+  axi_driver    m_driver;
+  axi_monitor   mon;   // 🔴 반드시 필요
 
-  function new(string name, uvm_component parent);
+  function new(string name="axi_agent", uvm_component parent=null);
     super.new(name, parent);
   endfunction
 
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
-    seqr = axi_sequencer::type_id::create("seqr", this);
-    drv  = axi_driver   ::type_id::create("drv",  this);
+    m_sequencer = axi_sequencer::type_id::create("m_sequencer", this);
+    m_driver    = axi_driver   ::type_id::create("m_driver",    this);
+    mon         = axi_monitor  ::type_id::create("mon",         this);
   endfunction
 
   function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);
-    drv.seq_item_port.connect(seqr.seq_item_export);
+    m_driver.seq_item_port.connect(m_sequencer.seq_item_export);
   endfunction
 
 endclass

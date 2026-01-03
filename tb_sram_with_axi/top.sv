@@ -30,7 +30,8 @@ module top;
 
   initial begin
     axi_if.ARESETn = 0;
-    repeat (5) @(posedge ACLK);
+//    repeat (5) @(posedge ACLK);
+#5;
     axi_if.ARESETn = 1;
   end
 
