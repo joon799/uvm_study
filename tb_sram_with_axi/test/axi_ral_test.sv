@@ -19,45 +19,42 @@ class axi_ral_test extends uvm_test;
     env = axi_env::type_id::create("env", this);
   endfunction
 
-  task run_phase(uvm_phase phase);
-    uvm_status_e     status;
-    uvm_reg_data_t  rdata;
+task run_phase(uvm_phase phase);
+  uvm_status_e   status;
+  uvm_reg_data_t wdata, rdata;
+  int unsigned addr;
 
-    phase.raise_objection(this);
+  phase.raise_objection(this);
 
-    `uvm_info("TEST", "Starting AXI RAL test", UVM_LOW)
+  repeat (5) begin
+    addr  = $urandom_range(0, 255);
+    wdata = $urandom();
 
-    // -----------------------------
-    // WRITE via RAL
-    // -----------------------------
-    env.ral_block.data_reg.write(
+    `uvm_info("TEST",
+      $sformatf("WRITE mem[%0d] = 0x%08h", addr, wdata),
+      UVM_LOW)
+
+    env.ral_block.mem.write(
       status,
-      32'hDEADBEEF,
+      addr,
+      wdata,
       UVM_FRONTDOOR
     );
 
-    if (status != UVM_IS_OK)
-      `uvm_error("RAL", "WRITE failed")
-
-    // -----------------------------
-    // READ via RAL  ⭐⭐⭐ 여기 핵심 ⭐⭐⭐
-    // -----------------------------
-    env.ral_block.data_reg.read(
+    env.ral_block.mem.read(
       status,
+      addr,
       rdata,
       UVM_FRONTDOOR
     );
 
-    if (status != UVM_IS_OK)
-      `uvm_error("RAL", "READ failed")
+    `uvm_info("TEST",
+      $sformatf("READ  mem[%0d] = 0x%08h", addr, rdata),
+      UVM_LOW)
+  end
 
-    `uvm_info("RAL",
-      $sformatf("Read data = 0x%08h", rdata),
-      UVM_LOW
-    )
-
-    phase.drop_objection(this);
-  endtask
+  phase.drop_objection(this);
+endtask
 
 endclass
 

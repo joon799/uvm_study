@@ -21,42 +21,37 @@ class axi_scoreboard extends uvm_component;
   // ---------------------------------
   // monitor에서 transaction 수신
   // ---------------------------------
-  virtual function void write(axi_trans tr);
+virtual function void write(axi_trans tr);
+  bit [31:0] addr_key;
+  addr_key = tr.addr & 32'h000003FC;
 
-    // -----------------------------
-    // WRITE transaction
-    // -----------------------------
-    if (tr.read == 0) begin
-      mem[tr.addr] = tr.wdata;
-
+  if (tr.read == 0) begin
+    mem[addr_key] = tr.wdata;
+    `uvm_info("SCOREBOARD",
+      $sformatf("WRITE addr=0x%08h data=0x%08h",
+                addr_key, tr.wdata),
+      UVM_LOW)
+  end
+  else begin
+    if (!mem.exists(addr_key)) begin
+      `uvm_error("SCOREBOARD",
+        $sformatf("READ addr=0x%08h but no previous WRITE",
+                  addr_key))
+    end
+    else if (mem[addr_key] !== tr.rdata) begin
+      `uvm_error("SCOREBOARD",
+        $sformatf("READ MISMATCH addr=0x%08h exp=0x%08h got=0x%08h",
+                  addr_key, mem[addr_key], tr.rdata))
+    end
+    else begin
       `uvm_info("SCOREBOARD",
-        $sformatf("WRITE addr=0x%08h data=0x%08h",
-                  tr.addr, tr.wdata),
+        $sformatf("READ OK addr=0x%08h data=0x%08h",
+                  addr_key, tr.rdata),
         UVM_LOW)
     end
+  end
+endfunction
 
-    // -----------------------------
-    // READ transaction
-    // -----------------------------
-    else begin
-      if (!mem.exists(tr.addr)) begin
-        `uvm_error("SCOREBOARD",
-          $sformatf("READ addr=0x%08h but no previous WRITE",
-                    tr.addr))
-      end
-      else if (mem[tr.addr] !== tr.rdata) begin
-        `uvm_error("SCOREBOARD",
-          $sformatf("READ MISMATCH addr=0x%08h exp=0x%08h got=0x%08h",
-                    tr.addr, mem[tr.addr], tr.rdata))
-      end
-      else begin
-        `uvm_info("SCOREBOARD",
-          $sformatf("READ OK addr=0x%08h data=0x%08h",
-                    tr.addr, tr.rdata),
-          UVM_LOW)
-      end
-    end
-  endfunction
 
 endclass
 
